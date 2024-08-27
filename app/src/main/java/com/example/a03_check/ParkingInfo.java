@@ -15,12 +15,12 @@ public class ParkingInfo {
         this.phone = phone;
     }
 
-    public String getFloor() {
-        return floor;
+    public String getParkingSpot() {
+        return parkingSpot;
     }
 
-    public void setFloor(String floor) {
-        this.floor = floor;
+    public void setParkingSpot(String parkingSpot) {
+        this.parkingSpot = parkingSpot;
     }
 
     public String getName() {
@@ -31,12 +31,12 @@ public class ParkingInfo {
         this.name = name;
     }
 
-    public String getParkingSpot() {
-        return parkingSpot;
+    public String getFloor() {
+        return floor;
     }
 
-    public void setParkingSpot(String parkingSpot) {
-        this.parkingSpot = parkingSpot;
+    public void setFloor(String floor) {
+        this.floor = floor;
     }
 
     public String getLicensePlate() {

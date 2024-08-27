@@ -1,6 +1,7 @@
 package com.example.a03_check;
 
 import android.content.ContentValues;
+import android.util.Log;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -109,6 +110,14 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
                     }
                 }
         );
+        // 找到按钮并设置点击监听器
+        findViewById(R.id.check_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AddParkingInfoActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initializeData() {
@@ -132,12 +141,23 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
         cursor = db.query(ParkingDatabaseHelper.TABLE_PARKING_INFO, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
-                String parkingSpot = cursor.getString(cursor.getColumnIndex(ParkingDatabaseHelper.COLUMN_PARKING_SPOT));
-                String floor = cursor.getString(cursor.getColumnIndex(ParkingDatabaseHelper.COLUMN_FLOOR));
-                String name = cursor.getString(cursor.getColumnIndex(ParkingDatabaseHelper.COLUMN_NAME));
-                String licensePlate = cursor.getString(cursor.getColumnIndex(ParkingDatabaseHelper.COLUMN_LICENSE_PLATE));
-                String phone = cursor.getString(cursor.getColumnIndex(ParkingDatabaseHelper.COLUMN_PHONE));
-                parkingInfoList.add(new ParkingInfo(parkingSpot, name, floor, licensePlate, phone));
+                int parkingSpotIndex = cursor.getColumnIndex(ParkingDatabaseHelper.COLUMN_PARKING_SPOT);
+                int floorIndex = cursor.getColumnIndex(ParkingDatabaseHelper.COLUMN_FLOOR);
+                int nameIndex = cursor.getColumnIndex(ParkingDatabaseHelper.COLUMN_NAME);
+                int licensePlateIndex = cursor.getColumnIndex(ParkingDatabaseHelper.COLUMN_LICENSE_PLATE);
+                int phoneIndex = cursor.getColumnIndex(ParkingDatabaseHelper.COLUMN_PHONE);
+
+                if (parkingSpotIndex != -1 && floorIndex != -1 && nameIndex != -1 && licensePlateIndex != -1 && phoneIndex != -1) {
+                    String parkingSpot = cursor.getString(parkingSpotIndex);
+                    String floor = cursor.getString(floorIndex);
+                    String name = cursor.getString(nameIndex);
+                    String licensePlate = cursor.getString(licensePlateIndex);
+                    String phone = cursor.getString(phoneIndex);
+                    parkingInfoList.add(new ParkingInfo(parkingSpot, name, floor, licensePlate, phone));
+                } else {
+                    // Handle the case where one or more columns are not found
+                    Log.e("initializeData", "One or more columns not found in the database.");
+                }
             } while (cursor.moveToNext());
         }
         cursor.close();
