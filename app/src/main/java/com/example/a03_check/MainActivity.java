@@ -1,6 +1,7 @@
 package com.example.a03_check;
 
 import android.content.ContentValues;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.content.Intent;
 import android.database.Cursor;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity implements SuggestionAdapter.OnSuggestionClickListener {
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
     private ParkingInfo currentParkingInfo;
     private ActivityResultLauncher<Intent> editActivityResultLauncher;
     private ParkingDatabaseHelper dbHelper;
+    private TextToSpeech textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
                                     "车牌号: " + currentParkingInfo.getLicensePlate() + "\n" +
                                     "电话: " + currentParkingInfo.getPhone()
                     );
+                    speakParkingSpot(currentParkingInfo.getParkingSpot());
                 } else {
                     resultTextView.setText("未找到匹配的信息");
                 }
@@ -110,6 +114,22 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
                     }
                 }
         );
+
+        // 初始化 TextToSpeech
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = textToSpeech.setLanguage(Locale.CHINA);
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("TextToSpeech", "Language is not supported");
+                    }
+                } else {
+                    Log.e("TextToSpeech", "Initialization failed");
+                }
+            }
+        });
+
         // 找到按钮并设置点击监听器
         findViewById(R.id.check_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +138,15 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+        super.onDestroy();
     }
 
     private void initializeData() {
@@ -244,5 +273,11 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
 
         db.update(ParkingDatabaseHelper.TABLE_PARKING_INFO, values, ParkingDatabaseHelper.COLUMN_LICENSE_PLATE + "=?", new String[]{parkingInfo.getLicensePlate()});
         db.close();
+    }
+
+    private void speakParkingSpot(String parkingSpot) {
+        if (textToSpeech != null && !textToSpeech.isSpeaking()) {
+            textToSpeech.speak("车位号 " + parkingSpot, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
     }
 }

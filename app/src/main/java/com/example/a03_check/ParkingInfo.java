@@ -7,7 +7,7 @@ public class ParkingInfo {
     private String licensePlate;
     private String phone;
 
-    public ParkingInfo(String parkingSpot, String name, String floor, String licensePlate, String phone) {
+    public ParkingInfo(String floor, String name, String parkingSpot, String licensePlate, String phone) {
         this.parkingSpot = parkingSpot;
         this.name = name;
         this.floor = floor;
