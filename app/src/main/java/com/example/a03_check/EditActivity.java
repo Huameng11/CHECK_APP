@@ -1,10 +1,13 @@
 package com.example.a03_check;
 
+
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class EditActivity extends AppCompatActivity {
@@ -59,7 +62,8 @@ public class EditActivity extends AppCompatActivity {
             String updatedParkingSpot = editParkingSpot.getText().toString();
             String updatedLicensePlate = editLicensePlate.getText().toString();
             String updatedPhone = editPhone.getText().toString();
-
+            // 更新数据库中的记录
+            updateParkingInfo(updatedFloor, updatedName, updatedParkingSpot, updatedLicensePlate, updatedPhone);
             // 将修改后的值传递回MainActivity
             Intent resultIntent = new Intent();
             resultIntent.putExtra("floor", updatedFloor);
@@ -76,7 +80,24 @@ public class EditActivity extends AppCompatActivity {
             deleteParkingInfo();
         });
     }
+    private void updateParkingInfo(String floor, String name, String parkingSpot, String licensePlate, String phone) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ParkingDatabaseHelper.COLUMN_FLOOR, floor);
+        values.put(ParkingDatabaseHelper.COLUMN_NAME, name);
+        values.put(ParkingDatabaseHelper.COLUMN_PARKING_SPOT, parkingSpot);
+        values.put(ParkingDatabaseHelper.COLUMN_LICENSE_PLATE, licensePlate);
+        values.put(ParkingDatabaseHelper.COLUMN_PHONE, phone);
 
+        int updatedRows = db.update(ParkingDatabaseHelper.TABLE_PARKING_INFO, values, ParkingDatabaseHelper.COLUMN_LICENSE_PLATE + "=?", new String[]{currentLicensePlate});
+        db.close();
+
+        if (updatedRows > 0) {
+            Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
+        }
+    }
     private void deleteParkingInfo() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int deletedRows = db.delete(ParkingDatabaseHelper.TABLE_PARKING_INFO, ParkingDatabaseHelper.COLUMN_LICENSE_PLATE + "=?", new String[]{currentLicensePlate});
@@ -86,8 +107,10 @@ public class EditActivity extends AppCompatActivity {
             Intent resultIntent = new Intent();
             setResult(RESULT_OK, resultIntent);
             finish();
+            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
         } else {
             // Handle error
+            Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
         }
     }
 }
