@@ -20,15 +20,25 @@ import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity implements SuggestionAdapter.OnSuggestionClickListener {
 
+    // 存储停车信息的列表
     private List<ParkingInfo> parkingInfoList;
+    // 输入车牌号的编辑框
     private EditText inputPlate;
+    // 显示结果的文本视图
     private TextView resultTextView;
+    // 显示建议列表的RecyclerView
     private RecyclerView suggestionList;
+    // 建议列表的适配器
     private SuggestionAdapter suggestionAdapter;
+    // 存储建议的列表
     private List<String> suggestions;
+    // 当前选中的停车信息
     private ParkingInfo currentParkingInfo;
+    // 用于启动编辑活动的ActivityResultLauncher
     private ActivityResultLauncher<Intent> editActivityResultLauncher;
+    // 数据库帮助类
     private ParkingDatabaseHelper dbHelper;
+    // 文本转语音帮助类
     private TextToSpeechHelper textToSpeechHelper;
 
     @Override
@@ -36,34 +46,48 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 初始化数据库帮助类
         dbHelper = new ParkingDatabaseHelper(this);
+        // 初始化文本转语音帮助类
         textToSpeechHelper = new TextToSpeechHelper(this);
 
+        // 初始化默认数据
         dbHelper.initializeDefaultData();
+        // 从数据库获取所有停车信息
         parkingInfoList = dbHelper.getAllParkingInfo();
 
+        // 初始化UI组件
         inputPlate = findViewById(R.id.input_plate);
         resultTextView = findViewById(R.id.result);
         suggestionList = findViewById(R.id.suggestion_list);
 
+        // 初始化建议列表
         suggestions = new ArrayList<>();
+        // 初始化建议列表的适配器
         suggestionAdapter = new SuggestionAdapter(suggestions, this);
+        // 设置RecyclerView的布局管理器
         suggestionList.setLayoutManager(new LinearLayoutManager(this));
+        // 设置RecyclerView的适配器
         suggestionList.setAdapter(suggestionAdapter);
 
+        // 设置文本变化监听器
         setupTextWatcher();
+        // 设置编辑活动结果启动器
         setupEditActivityResultLauncher();
+        // 设置检查按钮的点击监听器
         setupCheckButton();
     }
 
     @Override
     protected void onDestroy() {
+        // 关闭文本转语音
         if (textToSpeechHelper != null) {
             textToSpeechHelper.shutdown();
         }
         super.onDestroy();
     }
 
+    // 设置文本变化监听器
     private void setupTextWatcher() {
         inputPlate.addTextChangedListener(new TextWatcher() {
             @Override
@@ -71,10 +95,15 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // 获取查询字符串
                 String query = charSequence.toString();
+                // 更新建议列表
                 updateSuggestions(query);
+                // 根据查询字符串查找停车信息
                 currentParkingInfo = findParkingInfoByLicensePlate(query);
+                // 更新结果文本视图
                 UIHelper.updateResultTextView(resultTextView, currentParkingInfo);
+                // 如果找到停车信息，则使用文本转语音读出车位号
                 if (currentParkingInfo != null) {
                     textToSpeechHelper.speak("车位号 " + currentParkingInfo.getParkingSpot());
                 }
@@ -85,16 +114,21 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
         });
     }
 
+    // 设置编辑活动结果启动器
     private void setupEditActivityResultLauncher() {
         editActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
+                        // 如果结果码为RESULT_OK且数据不为空
                         if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                             Intent data = result.getData();
+                            // 从意图中更新当前停车信息
                             updateCurrentParkingInfoFromIntent(data);
+                            // 更新结果文本视图
                             UIHelper.updateResultTextView(resultTextView, currentParkingInfo);
+                            // 更新数据库中的停车信息
                             dbHelper.updateParkingInfo(currentParkingInfo);
                         }
                     }
@@ -102,16 +136,19 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
         );
     }
 
+    // 设置检查按钮的点击监听器
     private void setupCheckButton() {
         findViewById(R.id.check_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // 启动添加停车信息活动
                 Intent intent = new Intent(MainActivity.this, AddParkingInfoActivity.class);
                 startActivity(intent);
             }
         });
     }
 
+    // 根据车牌号查找停车信息
     private ParkingInfo findParkingInfoByLicensePlate(String licensePlate) {
         for (ParkingInfo parkingInfo : parkingInfoList) {
             if (parkingInfo.getLicensePlate().equals(licensePlate)) {
@@ -121,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
         return null;
     }
 
+    // 更新建议列表
     private void updateSuggestions(String query) {
         suggestions.clear();
         if (!query.isEmpty()) {
@@ -132,12 +170,14 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
         suggestionAdapter.notifyDataSetChanged();
     }
 
+    // 处理建议点击事件
     @Override
     public void onSuggestionClick(String suggestion) {
         inputPlate.setText(suggestion);
         inputPlate.setSelection(suggestion.length());
     }
 
+    // 处理结果点击事件
     public void onResultClick(View view) {
         if (currentParkingInfo != null) {
             Intent intent = new Intent(this, EditActivity.class);
@@ -150,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
         }
     }
 
+    // 从意图中更新当前停车信息
     private void updateCurrentParkingInfoFromIntent(Intent data) {
         String updatedFloor = data.getStringExtra("floor");
         String updatedName = data.getStringExtra("name");

@@ -11,10 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParkingDatabaseHelper extends SQLiteOpenHelper {
+    // 数据库名称
     private static final String DATABASE_NAME = "parking.db";
+    // 数据库版本
     private static final int DATABASE_VERSION = 1;
 
+    // 表名
     public static final String TABLE_PARKING_INFO = "parking_info";
+    // 列名
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_PARKING_SPOT = "parking_spot";
     public static final String COLUMN_FLOOR = "floor";
@@ -22,6 +26,7 @@ public class ParkingDatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_LICENSE_PLATE = "license_plate";
     public static final String COLUMN_PHONE = "phone";
 
+    // 创建表的SQL语句
     private static final String DATABASE_CREATE = "create table "
             + TABLE_PARKING_INFO + "(" + COLUMN_ID + " integer primary key autoincrement, "
             + COLUMN_PARKING_SPOT + " text not null, "
@@ -30,21 +35,25 @@ public class ParkingDatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_LICENSE_PLATE + " text not null, "
             + COLUMN_PHONE + " text not null);";
 
+    // 构造函数
     public ParkingDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    // 创建数据库时调用
     @Override
     public void onCreate(SQLiteDatabase database) {
         database.execSQL(DATABASE_CREATE);
     }
 
+    // 升级数据库时调用
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PARKING_INFO);
         onCreate(db);
     }
 
+    // 获取所有停车信息
     public List<ParkingInfo> getAllParkingInfo() {
         List<ParkingInfo> parkingInfoList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -55,6 +64,7 @@ public class ParkingDatabaseHelper extends SQLiteOpenHelper {
         return parkingInfoList;
     }
 
+    // 插入停车信息
     public void insertParkingInfo(ParkingInfo parkingInfo) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -67,6 +77,7 @@ public class ParkingDatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // 更新停车信息
     public void updateParkingInfo(ParkingInfo parkingInfo) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -79,12 +90,14 @@ public class ParkingDatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // 删除停车信息
     public void deleteParkingInfo(String licensePlate) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_PARKING_INFO, COLUMN_LICENSE_PLATE + "=?", new String[]{licensePlate});
         db.close();
     }
 
+    // 从Cursor加载停车信息
     private void loadParkingInfoFromCursor(Cursor cursor, List<ParkingInfo> parkingInfoList) {
         if (cursor.moveToFirst()) {
             do {
@@ -96,6 +109,7 @@ public class ParkingDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // 从Cursor创建ParkingInfo对象
     private ParkingInfo createParkingInfoFromCursor(Cursor cursor) {
         int parkingSpotIndex = cursor.getColumnIndex(COLUMN_PARKING_SPOT);
         int floorIndex = cursor.getColumnIndex(COLUMN_FLOOR);
@@ -116,6 +130,7 @@ public class ParkingDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // 初始化默认数据
     public void initializeDefaultData() {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(TABLE_PARKING_INFO, null, null, null, null, null, null);
@@ -126,6 +141,7 @@ public class ParkingDatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // 插入默认数据
     private void insertDefaultData(SQLiteDatabase db) {
         List<ParkingInfo> defaultData = getDefaultData();
         for (ParkingInfo info : defaultData) {
@@ -139,6 +155,7 @@ public class ParkingDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // 获取默认数据
     private List<ParkingInfo> getDefaultData() {
         List<ParkingInfo> defaultData = new ArrayList<>();
         defaultData.add(new ParkingInfo("1#", "白书颜", "1#", "晋DF15999", "15235592555"));
