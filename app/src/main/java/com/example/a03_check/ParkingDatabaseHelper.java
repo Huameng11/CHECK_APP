@@ -19,8 +19,8 @@ public class ParkingDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_CREATE = "create table "
             + TABLE_PARKING_INFO + "(" + COLUMN_ID + " integer primary key autoincrement, "
             + COLUMN_PARKING_SPOT + " text not null, "
-            + COLUMN_FLOOR + " text not null, "
             + COLUMN_NAME + " text not null, "
+            + COLUMN_FLOOR + " text not null, "
             + COLUMN_LICENSE_PLATE + " text not null, "
             + COLUMN_PHONE + " text not null);";
 

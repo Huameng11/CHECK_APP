@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
             String name = cursor.getString(nameIndex);
             String licensePlate = cursor.getString(licensePlateIndex);
             String phone = cursor.getString(phoneIndex);
-            return new ParkingInfo(parkingSpot, name, floor, licensePlate, phone);
+            return new ParkingInfo(floor, name, parkingSpot, licensePlate, phone);
         } else {
             Log.e("initializeData", "One or more columns not found in the database.");
             return null;
@@ -263,12 +263,12 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
 
     private void updateResultTextView(ParkingInfo parkingInfo) {
         if (parkingInfo != null) {
+
             resultTextView.setText(
                     "车位号: " + parkingInfo.getParkingSpot() + "\n" +
-                            "楼层: " + parkingInfo.getFloor() + "\n" +
-                            "姓名: " + parkingInfo.getName() + "\n" +
-                            "车牌号: " + parkingInfo.getLicensePlate() + "\n" +
-                            "电话: " + parkingInfo.getPhone()
+                    "姓名: " + parkingInfo.getName() + "\n" +
+                    "车牌号: " + parkingInfo.getLicensePlate() + "\n" +
+                    "电话: " + parkingInfo.getPhone()
             );
             speakParkingSpot(parkingInfo.getParkingSpot());
         } else {

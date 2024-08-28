@@ -1,16 +1,16 @@
 package com.example.a03_check;
 
 public class ParkingInfo {
-    private String parkingSpot;
-    private String name;
     private String floor;
+    private String name;
+    private String parkingSpot;
     private String licensePlate;
     private String phone;
 
     public ParkingInfo(String floor, String name, String parkingSpot, String licensePlate, String phone) {
-        this.parkingSpot = parkingSpot;
-        this.name = name;
         this.floor = floor;
+        this.name = name;
+        this.parkingSpot = parkingSpot;
         this.licensePlate = licensePlate;
         this.phone = phone;
     }

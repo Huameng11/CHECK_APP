@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class AddParkingInfoActivity extends AppCompatActivity {
 
     private EditText parkingSpotEditText;
-    private EditText floorEditText;
+    //private EditText floorEditText;
     private EditText nameEditText;
     private EditText licensePlateEditText;
     private EditText phoneEditText;
@@ -28,7 +28,7 @@ public class AddParkingInfoActivity extends AppCompatActivity {
         dbHelper = new ParkingDatabaseHelper(this);
 
         parkingSpotEditText = findViewById(R.id.edit_parking_spot);
-        floorEditText = findViewById(R.id.edit_floor);
+        //floorEditText = findViewById(R.id.edit_floor);
         nameEditText = findViewById(R.id.edit_name);
         licensePlateEditText = findViewById(R.id.edit_license_plate);
         phoneEditText = findViewById(R.id.edit_phone);
@@ -44,7 +44,7 @@ public class AddParkingInfoActivity extends AppCompatActivity {
 
     private void saveParkingInfo() {
         String parkingSpot = parkingSpotEditText.getText().toString();
-        String floor = floorEditText.getText().toString();
+        //String floor = floorEditText.getText().toString();
         String name = nameEditText.getText().toString();
         String licensePlate = licensePlateEditText.getText().toString();
         String phone = phoneEditText.getText().toString();
@@ -52,8 +52,8 @@ public class AddParkingInfoActivity extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ParkingDatabaseHelper.COLUMN_PARKING_SPOT, parkingSpot);
-        values.put(ParkingDatabaseHelper.COLUMN_FLOOR, floor);
         values.put(ParkingDatabaseHelper.COLUMN_NAME, name);
+        values.put(ParkingDatabaseHelper.COLUMN_FLOOR, "floor");
         values.put(ParkingDatabaseHelper.COLUMN_LICENSE_PLATE, licensePlate);
         values.put(ParkingDatabaseHelper.COLUMN_PHONE, phone);
 

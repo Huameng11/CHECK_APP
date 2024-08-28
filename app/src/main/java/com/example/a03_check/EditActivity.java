@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class EditActivity extends AppCompatActivity {
 
-    private EditText editFloor;
+
     private EditText editName;
     private EditText editParkingSpot;
     private EditText editLicensePlate;
@@ -29,7 +29,7 @@ public class EditActivity extends AppCompatActivity {
 
         dbHelper = new ParkingDatabaseHelper(this);
 
-        editFloor = findViewById(R.id.edit_floor);
+        //editFloor = findViewById(R.id.edit_floor);
         editName = findViewById(R.id.edit_name);
         editParkingSpot = findViewById(R.id.edit_parking_spot);
         editLicensePlate = findViewById(R.id.edit_license_plate);
@@ -46,7 +46,7 @@ public class EditActivity extends AppCompatActivity {
         String phone = intent.getStringExtra("phone");
 
         // 设置初始值
-        editFloor.setText(floor);
+        //editFloor.setText(floor);
         editName.setText(name);
         editParkingSpot.setText(parkingSpot);
         editLicensePlate.setText(licensePlate);
@@ -57,16 +57,17 @@ public class EditActivity extends AppCompatActivity {
         // 保存按钮点击事件
         saveButton.setOnClickListener(v -> {
             // 获取修改后的值
-            String updatedFloor = editFloor.getText().toString();
+            //String updatedFloor = editFloor.getText().toString();
+
             String updatedName = editName.getText().toString();
             String updatedParkingSpot = editParkingSpot.getText().toString();
             String updatedLicensePlate = editLicensePlate.getText().toString();
             String updatedPhone = editPhone.getText().toString();
             // 更新数据库中的记录
-            updateParkingInfo(updatedFloor, updatedName, updatedParkingSpot, updatedLicensePlate, updatedPhone);
+            updateParkingInfo("floor", updatedName, updatedParkingSpot, updatedLicensePlate, updatedPhone);
             // 将修改后的值传递回MainActivity
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("floor", updatedFloor);
+            resultIntent.putExtra("floor", "floor");
             resultIntent.putExtra("name", updatedName);
             resultIntent.putExtra("parkingSpot", updatedParkingSpot);
             resultIntent.putExtra("licensePlate", updatedLicensePlate);
@@ -83,17 +84,16 @@ public class EditActivity extends AppCompatActivity {
     private void updateParkingInfo(String floor, String name, String parkingSpot, String licensePlate, String phone) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(ParkingDatabaseHelper.COLUMN_FLOOR, floor);
-        values.put(ParkingDatabaseHelper.COLUMN_NAME, name);
         values.put(ParkingDatabaseHelper.COLUMN_PARKING_SPOT, parkingSpot);
+        values.put(ParkingDatabaseHelper.COLUMN_NAME, name);
+        values.put(ParkingDatabaseHelper.COLUMN_FLOOR, floor);
         values.put(ParkingDatabaseHelper.COLUMN_LICENSE_PLATE, licensePlate);
         values.put(ParkingDatabaseHelper.COLUMN_PHONE, phone);
-
         int updatedRows = db.update(ParkingDatabaseHelper.TABLE_PARKING_INFO, values, ParkingDatabaseHelper.COLUMN_LICENSE_PLATE + "=?", new String[]{currentLicensePlate});
         db.close();
 
         if (updatedRows > 0) {
-            Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
         }
