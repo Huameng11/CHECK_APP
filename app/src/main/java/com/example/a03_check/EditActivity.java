@@ -93,7 +93,7 @@ public class EditActivity extends AppCompatActivity {
         db.close();
 
         if (updatedRows > 0) {
-            //Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
         }
