@@ -57,10 +57,20 @@
         android:textStyle="bold"
         android:textSize="25sp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
+
         android:clickable="true"
         android:focusable="true"
-        android:onClick="onResultClick" />  <!-- 增大与下方控件的间距 -->
+        android:onClick="onResultClick" />
+    <TextView
+        android:id="@+id/phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textStyle="bold"
+        android:textSize="25sp"
+        android:layout_marginBottom="10dp"/><!-- 增大与下方控件的间距 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/suggestion_list"
         android:layout_width="match_parent"

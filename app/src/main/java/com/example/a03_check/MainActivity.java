@@ -17,13 +17,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-
+import android.net.Uri;
 public class MainActivity extends AppCompatActivity implements SuggestionAdapter.OnSuggestionClickListener {
 
     // 存储停车信息的列表
     private List<ParkingInfo> parkingInfoList;
     // 输入车牌号的编辑框
     private EditText inputPlate;
+    // 显示联系电话的文本视图
+    private TextView phoneTextView;
     // 显示结果的文本视图
     private TextView resultTextView;
     // 显示建议列表的RecyclerView
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
         // 初始化UI组件
         inputPlate = findViewById(R.id.input_plate);
         resultTextView = findViewById(R.id.result);
+        phoneTextView = findViewById(R.id.phone);
         suggestionList = findViewById(R.id.suggestion_list);
 
         // 初始化建议列表
@@ -76,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
         setupEditActivityResultLauncher();
         // 设置检查按钮的点击监听器
         setupCheckButton();
+        // 设置电话号码点击事件监听器
+        setupPhoneClickListener();
     }
 
     @Override
@@ -102,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
                 // 根据查询字符串查找停车信息
                 currentParkingInfo = findParkingInfoByLicensePlate(query);
                 // 更新结果文本视图
-                UIHelper.updateResultTextView(resultTextView, currentParkingInfo);
+                UIHelper.updateResultTextView(resultTextView, phoneTextView,currentParkingInfo);
                 // 如果找到停车信息，则使用文本转语音读出车位号
                 if (currentParkingInfo != null) {
                     textToSpeechHelper.speak("车位号 " + currentParkingInfo.getParkingSpot());
@@ -127,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
                             // 从意图中更新当前停车信息
                             updateCurrentParkingInfoFromIntent(data);
                             // 更新结果文本视图
-                            UIHelper.updateResultTextView(resultTextView, currentParkingInfo);
+                            UIHelper.updateResultTextView(resultTextView,phoneTextView, currentParkingInfo);
                             // 更新数据库中的停车信息
                             dbHelper.updateParkingInfo(currentParkingInfo);
                         }
@@ -176,7 +181,28 @@ public class MainActivity extends AppCompatActivity implements SuggestionAdapter
         inputPlate.setText(suggestion);
         inputPlate.setSelection(suggestion.length());
     }
+    private void setupPhoneClickListener() {
+        // 为 phoneTextView 设置点击事件监听器
+        phoneTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 检查当前的停车信息是否为空
+                if (currentParkingInfo != null) {
+                    // 获取当前停车信息的电话号码
+                    String phoneNumber = currentParkingInfo.getPhone();
 
+                    // 创建一个拨号意图 (Intent)
+                    Intent dialIntent = new Intent(Intent.ACTION_DIAL);
+
+                    // 设置意图的数据为电话号码
+                    dialIntent.setData(Uri.parse("tel:" + phoneNumber));
+
+                    // 启动意图，打开系统的拨号界面
+                    startActivity(dialIntent);
+                }
+            }
+        });
+    }
     // 处理结果点击事件
     public void onResultClick(View view) {
         if (currentParkingInfo != null) {
